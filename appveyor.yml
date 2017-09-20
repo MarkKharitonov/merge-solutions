@@ -3,3 +3,6 @@ version: 1.0.{build}
 
 build:
   verbosity: normal
+
+artifacts:
+  - path: merge-solutions\bin\$(configuration)\merge-solutions.exe
