@@ -10,11 +10,19 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1 # Need msbuild (not dotnet) for .net framework
       - name: Build with dotnet
         run: msbuild /p:Configuration=Release
+      - name: Get product version
+        id: version
+        shell: pwsh
+        run: |
+          Select-XML -Namespace @{msb="http://schemas.microsoft.com/developer/msbuild/2003"} -Path .\merge-solutions\merge-solutions.csproj -XPath "//msb:Project/msb:PropertyGroup/msb:ProductVersion" |`
+            Select-Object -Property @{Name="ProductVersion"; Expression={$_.Node.InnerXml}} |`
+            Select -ExpandProperty "ProductVersion" -OutVariable version
+          Write-Host "::set-output name=version::$version"
       - name: Publish artifacts
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ github.event.repository.name }}-${{ github.ref }}
+          name: ${{ github.event.repository.name }} v${{ steps.version.outputs.version }}
           path: |
             ${{ github.event.repository.name }}\merge-solutions\bin\Release\*.exe
             ${{ github.event.repository.name }}\merge-solutions\bin\Release\*.pdb
