@@ -1,0 +1,35 @@
+name: Build
+on: [push, pull_request]
+
+jobs:
+  build:
+    # matrix for both release and debug builds
+    strategy:
+      matrix:
+        configuration: [Release, Debug]
+
+    runs-on: windows-2019 # need older VM for .NETFramwork v4.0
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1 # Need msbuild (not dotnet) for .net framework
+      # TODO, build both release and debug, but only publish release
+      - name: Build (${{ matrix.configuration }} flavor)
+        run: msbuild /p:Configuration=${{ matrix.configuration }}
+      - name: Get product version
+        id: version
+        shell: pwsh
+        run: |
+          Select-XML -Namespace @{msb="http://schemas.microsoft.com/developer/msbuild/2003"} -Path .\merge-solutions\merge-solutions.csproj -XPath "//msb:Project/msb:PropertyGroup/msb:ProductVersion" |`
+            Select-Object -Property @{Name="ProductVersion"; Expression={$_.Node.InnerXml}} |`
+            Select -ExpandProperty "ProductVersion" -OutVariable version
+          echo "version=$version" >> $env:GITHUB_ENV
+      - name: Publish artifacts
+        # In the future, maybe we can be smarter about this and only publish artifacts when the version changes
+        if: ${{ matrix.configuration == 'Release' && startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.event.repository.name }} v${{ steps.version.outputs.version }}
+          path: |
+            ${{ github.event.repository.name }}\merge-solutions\bin\Release\*.exe
+            ${{ github.event.repository.name }}\merge-solutions\bin\Release\*.pdb
