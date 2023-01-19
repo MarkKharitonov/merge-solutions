@@ -9,6 +9,6 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 4.0.x # From .csproj file
+          dotnet-version: '4.0.x' # From .csproj file
       - name: Build with dotnet
         run: dotnet build --configuration Release
