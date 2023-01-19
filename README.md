@@ -1,11 +1,11 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/4ybes0qku6s7pkm7/branch/master?svg=true)](https://ci.appveyor.com/project/IvanBoyko/merge-solutions/branch/master)
+[![Build](https://github.com/scowalt/merge-solutions/actions/workflows/build.yml/badge.svg?branch=scowalt%2Fmaster)](https://github.com/scowalt/merge-solutions/actions/workflows/build.yml)
 
 # What it does
 
 Merges Visual Studio solutions into a single .sln file
 
-
 # Usage
+
 ```
 merge-solutions.exe [/nonstop] [/fix] [/config solutionlist.txt] [/out merged.sln] [solution1.sln solution2.sln ...]
   /fix              regenerates duplicate project guids and replaces them in corresponding project/solution files,
@@ -15,7 +15,6 @@ merge-solutions.exe [/nonstop] [/fix] [/config solutionlist.txt] [/out merged.sl
   /nonstop          do not prompt for keypress if there were errors/warnings
   solution?.sln     list of solutions to be merged
 ```
-
 
 # Original project
 
